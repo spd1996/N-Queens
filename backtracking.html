@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Backtracking Animation: N-Queens</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      background: #181824;
+      color: #f1f5f9;
+      font-family: Segoe UI, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 24px;
+    }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(8, 40px);
+      grid-template-rows: repeat(8, 40px);
+      gap: 2px;
+      justify-content: center;
+      margin: 30px auto 0;
+      width: max-content;
+      background: #23233a;
+      border-radius: 10px;
+      box-shadow: 0 0 24px #38bdf8;
+    }
+    .cell {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7em;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .cell.even { background: #4fd1c5; color: #181824; }
+    .cell.odd { background: #38bdf8; color: #181824; }
+    .cell.trying { background: #ff9800 !important; color: #fff; }
+    .cell.conflict { background: #e11d48 !important; color: #fff; }
+    .cell.queen { background: #ffd700 !important; color: #23233a; }
+    #explanation {
+      margin: 24px auto 0;
+      max-width: 600px;
+      background: #23233a;
+      border-radius: 8px;
+      padding: 15px;
+      font-size: 1.1em;
+      min-height: 48px;
+    }
+    button {
+      display: block;
+      margin: 30px auto 0;
+      padding: 10px 24px;
+      font-size: 1.1em;
+      background: #38bdf8;
+      color: #181824;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    section {
+      max-width: 900px;
+      margin: 32px auto 0;
+      background: #23233a;
+      border-radius: 10px;
+      padding: 24px 18px;
+      box-shadow: 0 0 12px #23233a;
+    }
+    h3 {
+      color: #38bdf8;
+      margin-top: 0;
+    }
+    pre.fullcode {
+      background: #101014;
+      color: #f1f5f9;
+      padding: 16px 12px;
+      border-radius: 8px;
+      font-size: 1.05em;
+      overflow-x: auto;
+      margin-top: 12px;
+    }
+    @media (max-width: 400px) {
+      #board { grid-template-columns: repeat(8, 28px); grid-template-rows: repeat(8, 28px);}
+      .cell { width: 28px; height: 28px; font-size: 1.1em;}
+      section { padding: 10px 2px; }
+    }
+  </style>
+</head>
+<body>
+  <h2>Backtracking Animation: N-Queens (8x8)</h2>
+  <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;">
+    <div>
+      <div id="board"></div>
+      <div id="explanation"></div>
+    </div>
+    <div>
+      <pre id="codeBox" style="background:#23233a;color:#f1f5f9;padding:18px 16px 18px 24px;border-radius:10px;font-size:1.1em;min-width:320px;max-width:420px;line-height:1.6;">
+<span id="cl0">function solve(row):</span>
+<span id="cl1">  if row == N: return true</span>
+<span id="cl2">  for col in 0..N-1:</span>
+<span id="cl3">    if isSafe(row, col):</span>
+<span id="cl4">      placeQueen(row, col)</span>
+<span id="cl5">      if solve(row+1): return true</span>
+<span id="cl6">      removeQueen(row, col) # backtrack</span>
+<span id="cl7">  return false</span>
+      </pre>
+    </div>
+  </div>
+  <button onclick="nextStep()">Next Step</button>
+
+  <section>
+    <h3>Full Problem Statement</h3>
+    <p>
+      <b>N-Queens Problem:</b> Place N queens on an N×N chessboard so that no two queens threaten each other. That is, no two queens share the same row, column, or diagonal.<br>
+      For N = 8, print one possible arrangement of 8 queens on the board.
+    </p>
+  </section>
+
+  <section>
+    <h3>Full Code Solution (Python)</h3>
+    <pre class="fullcode">def solve_n_queens(N):
+    board = [-1] * N
+    def is_safe(row, col):
+        for r in range(row):
+            c = board[r]
+            if c == col or abs(c - col) == abs(r - row):
+                return False
+        return True
+
+    def solve(row):
+        if row == N:
+            print(board)
+            return True
+        for col in range(N):
+            if is_safe(row, col):
+                board[row] = col
+                if solve(row + 1):
+                    return True
+                board[row] = -1  # backtrack
+        return False
+
+    solve(0)
+    # Output: board[i] = column of queen in row i
+
+solve_n_queens(8)
+</pre>
+  </section>
+
+  <script>
+    // N-Queens Backtracking Animation (8x8)
+    const N = 8;
+    let queens = [];
+    let row = 0, col = 0, phase = 'try', finished = false;
+    let explanation = document.getElementById('explanation');
+    const boardDiv = document.getElementById('board');
+    const codeLines = [
+      "function solve(row):",
+      "  if row == N: return true",
+      "  for col in 0..N-1:",
+      "    if isSafe(row, col):",
+      "      placeQueen(row, col)",
+      "      if solve(row+1): return true",
+      "      removeQueen(row, col) # backtrack",
+      "  return false"
+    ];
+    function highlightCode(idx) {
+      for (let i = 0; i < codeLines.length; i++) {
+        document.getElementById('cl'+i).style.background = (i === idx) ? "#ff9800" : "none";
+        document.getElementById('cl'+i).style.color = (i === idx) ? "#23233a" : "#f1f5f9";
+        document.getElementById('cl'+i).style.fontWeight = (i === idx) ? "bold" : "normal";
+      }
+    }
+    function isSafe(r, c) {
+      for (let q of queens) {
+        if (q[1] === c || q[0] - q[1] === r - c || q[0] + q[1] === r + c) return false;
+      }
+      return true;
+    }
+    function renderBoard(tryRow = -1, tryCol = -1, conflictCols = []) {
+      boardDiv.innerHTML = '';
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+          let cell = document.createElement('div');
+          cell.className = 'cell ' + ((r + c) % 2 === 0 ? 'even' : 'odd');
+          if (queens.some(q => q[0] === r && q[1] === c)) {
+            cell.classList.add('queen');
+            cell.textContent = '♛';
+          } else if (r === tryRow && c === tryCol) {
+            cell.classList.add('trying');
+            cell.textContent = '?';
+          } else if (r === tryRow && conflictCols.includes(c)) {
+            cell.classList.add('conflict');
+            cell.textContent = '×';
+          }
+          boardDiv.appendChild(cell);
+        }
+      }
+    }
+    function setExplanation(text) {
+      explanation.innerHTML = text;
+    }
+    function nextStep() {
+      if (finished) return;
+      if (phase === 'try') {
+        highlightCode(2);
+        if (row >= N) {
+          setExplanation(`<b>Success!</b> All queens placed. Solution found!`);
+          renderBoard();
+          highlightCode(1);
+          finished = true;
+          return;
+        }
+        if (col >= N) {
+          // Backtrack
+          if (queens.length === 0) {
+            setExplanation("No solution exists.");
+            finished = true;
+            renderBoard();
+            highlightCode(7);
+            return;
+          }
+          let [prevRow, prevCol] = queens.pop();
+          setExplanation(`Backtracking from row ${row}, no valid column. Remove queen from (${prevRow}, ${prevCol}).<br><b>Backtrack step</b> (line 6).`);
+          row = prevRow;
+          col = prevCol + 1;
+          renderBoard(row, col);
+          highlightCode(6);
+          phase = 'try';
+          return;
+        }
+        // Try placing queen at (row, col)
+        highlightCode(3);
+        if (isSafe(row, col)) {
+          renderBoard(row, col);
+          setExplanation(`Trying to place queen at <b>(${row}, ${col})</b>: <span style="color:#10b981;">Safe!</span><br>Proceed to <b>placeQueen</b> (line 4).`);
+          phase = 'place';
+        } else {
+          // Show conflicts
+          let conflictCols = [];
+          for (let c2 = 0; c2 < N; c2++) {
+            if (!isSafe(row, c2)) conflictCols.push(c2);
+          }
+          renderBoard(row, col, conflictCols);
+          setExplanation(`Trying to place queen at <b>(${row}, ${col})</b>: <span style="color:#e11d48;">Conflict!</span><br>Continue loop (line 2).`);
+          col++;
+        }
+      } else if (phase === 'place') {
+        // Place queen and move to next row
+        highlightCode(4);
+        queens.push([row, col]);
+        setExplanation(`Placed queen at <b>(${row}, ${col})</b> (line 4).<br>Now, recursively solve for next row (line 5).`);
+        row++;
+        col = 0;
+        renderBoard();
+        phase = 'try';
+      }
+    }
+    // Initial render
+    renderBoard();
+    setExplanation("Place 8 queens on the board so that no two attack each other.<br>Click <b>Next Step</b> to watch the backtracking algorithm in action.<br>The code on the right highlights the current step.");
+    // Highlight initial code line
+    for (let i = 0; i < codeLines.length; i++) {
+      document.getElementById('cl'+i).style.background = "none";
+      document.getElementById('cl'+i).style.color = "#f1f5f9";
+      document.getElementById('cl'+i).style.fontWeight = "normal";
+    }
+    highlightCode(0);
+  </script>
+</body>
+</html>
